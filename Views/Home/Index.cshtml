@@ -1,0 +1,84 @@
+﻿@using System.Text
+@{
+    ViewData["Title"] = "YoYo Test";
+
+}
+@model PlayerViewModel
+@{ ShuttleInfo shuttleInfo = Model.ReadShuttleInfo(); }
+<script type="text/javascript">
+    var isStarted = @Model.IsStart.ToString().ToLower();
+</script>
+<div class="circle-wrapper text-center">
+    <div id="statusContainer" class="d-flex justify-content-center">
+        <div class="shadow-lg mb-5 bg-white rounded rounded-circle">
+            @if (!Model.IsStart)
+            {<a asp-controller="Home" asp-action="Start">
+                    <div id="play" style="font-size: 5em; padding-top: 35px; padding-left: 20px; width: 2em; height: 2em;">
+                        <i class="fa fa-play"></i>
+                    </div>
+                </a>
+            }
+            else
+            {
+                <div class="running-shuttle-info">
+                    <div class="shuttle-level">
+                        Level <span>@shuttleInfo.SpeedLevel</span>
+                    </div>
+                    <div class="shuttle-no">
+                        Shuttle <span>@shuttleInfo.ShuttleNo</span>
+                    </div>
+                    <div class="shuttle-speed">
+                        <span>@shuttleInfo.Speed</span> km/h
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center">
+    <div class="p-3 text-center border-right">
+        <div class="text-uppercase">Next Shuttle</div>
+        <div class="next-shuttl" data-total-seconds="@Model.NextOrgSeconds"><span>@Model.NextShuttle</span> s</div>
+    </div>
+    <div class="p-3 text-center border-right">
+        <div class="text-uppercase">Total Time</div>
+        <div class="total-time"><span>@Model.ElapsedTime</span> m</div>
+    </div>
+    <div class="p-3 text-center">
+        <div class="text-uppercase">Total Distance</div>
+        <div class="total-distance"><span>@shuttleInfo.AccumulatedShuttleDistance</span> m</div>
+    </div>
+</div>
+<div class="w-100">
+    <div class="pt-4">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" colspan="3">Track</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Players)
+                    {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.Name</td>
+                        <td class="action-control">
+                            @if (Model.IsStart && !item.Statuses.Contains("Stop"))
+                            {
+                                <span class="badge badge-pill badge-secondary status">Warn</span>
+                                <span class="badge badge-pill badge-danger status">Stop</span>
+                            }
+                            @if (item.Statuses.Contains("Stop"))
+                            {
+                                <span class="final-status">[@item.SuccessFleet.SpeedLevel - @item.SuccessFleet.ShuttleNo]</span>
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
